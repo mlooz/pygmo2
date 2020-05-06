@@ -1294,6 +1294,24 @@ class archipelago_test_case(_ut.TestCase):
         self.assertEqual(loads(dumps(a)).get_migrant_handling(),
                          migrant_handling.evict)
 
+    def run_numba_tests(self):
+        from numba import jit
+
+        # Pythonic problem.
+        class p(object):
+
+            def get_bounds(self):
+                return ([0, 0], [1, 1])
+
+            @jit(nopython=True)
+            def fitness(self, a):
+                return [42]
+
+        p = problem(p())
+        a = archipelago(5, t=topology(ring()), algo=de(), prob=p,
+                        pop_size=10, udi=mp_island(), seed=5, b=bfe(default_bfe()))
+        a.evolve(1)
+
     def run_champions_tests(self):
         from . import archipelago, de, rosenbrock, zdt
         from numpy import ndarray
